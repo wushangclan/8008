@@ -1,0 +1,606 @@
+
+1)Aim: Implement depth first search algorithm and Breadth First Search algorithm, Use an undirected
+graph and develop a recursive algorithm for searching all the vertices of a graph or tree data 
+structure.
+
+# BFS algorithm in Python CODE
+
+import collections
+
+# BFS algorithm
+def bfs(graph, root):
+
+    visited, queue = set(), collections.deque([root])
+    visited.add(root)
+
+    while queue:
+
+        # Dequeue a vertex from queue
+        vertex = queue.popleft()
+        print(str(vertex) + " ", end="")
+
+        # If not visited, mark it as visited, and
+        # enqueue it
+        for neighbour in graph[vertex]:
+            if neighbour not in visited:
+                visited.add(neighbour)
+                queue.append(neighbour)
+
+if __name__ == '__main__':
+    graph = {0: [1, 2], 1: [2], 2: [3], 3: [1, 2]}
+    print("Following is Breadth First Traversal: ")
+    bfs(graph, 0)
+***************************************************************************
+# DFS algorithm in Python
+
+# DFS algorithm
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(start)
+    print(start)
+    for next in graph[start] - visited:
+        dfs(graph, next, visited)
+    return visited
+graph = {'0': set(['1', '2']),
+         '1': set(['0', '3', '4']),
+         '2': set(['0']),
+         '3': set(['1']),
+         '4': set(['2', '3'])}
+
+dfs(graph, '0')
+******************************************************************************
+2) Aim:- Implement A star Algorithm for any game search problem. 
+
+from collections import deque
+
+class Graph:
+    # example of adjacency list (or rather map)
+    # adjacency_list = {
+    # 'A': [('B', 1), ('C', 3), ('D', 7)],
+    # 'B': [('D', 5)],
+    # 'C': [('D', 12)]
+    # }
+
+    def __init__(self, adjacency_list):
+        self.adjacency_list = adjacency_list
+
+    def get_neighbors(self, v):
+        return self.adjacency_list[v]
+
+    # heuristic function with equal values for all nodes
+    def h(self, n):
+        H = {
+            'A': 1,
+            'B': 1,
+            'C': 1,
+            'D': 1
+        }
+
+        return H[n]
+
+    def a_star_algorithm(self, start_node, stop_node):
+        # open_list is a list of nodes which have been visited, but who's neighbors
+        # haven't all been inspected, starts off with the start node
+        # closed_list is a list of nodes which have been visited
+        # and who's neighbors have been inspected
+        open_list = set([start_node])
+        closed_list = set([])
+
+        # g contains current distances from start_node to all other nodes
+        # the default value (if it's not found in the map) is +infinity
+        g = {}
+
+        g[start_node] = 0
+
+        # parents contains an adjacency map of all nodes
+        parents = {}
+        parents[start_node] = start_node
+
+        while len(open_list) > 0:
+            n = None
+
+            # find a node with the lowest value of f() - evaluation function
+            for v in open_list:
+                if n == None or g[v] + self.h(v) < g[n] + self.h(n):
+                    n = v;
+
+            if n == None:
+                print('Path does not exist!')
+                return None
+
+            # if the current node is the stop_node
+            # then we begin reconstructin the path from it to the start_node
+            if n == stop_node:
+                reconst_path = []
+
+                while parents[n] != n:
+                    reconst_path.append(n)
+                    n = parents[n]
+
+                reconst_path.append(start_node)
+
+                reconst_path.reverse()
+
+                print('Path found: {}'.format(reconst_path))
+                return reconst_path
+
+            # for all neighbors of the current node do
+            for (m, weight) in self.get_neighbors(n):
+                # if the current node isn't in both open_list and closed_list
+                # add it to open_list and note n as it's parent
+                if m not in open_list and m not in closed_list:
+                    open_list.add(m)
+                    parents[m] = n
+                    g[m] = g[n] + weight
+
+                # otherwise, check if it's quicker to first visit n, then m
+                # and if it is, update parent data and g data
+                # and if the node was in the closed_list, move it to open_list
+                else:
+                    if g[m] > g[n] + weight:
+                        g[m] = g[n] + weight
+                        parents[m] = n
+
+                        if m in closed_list:
+                            closed_list.remove(m)
+                            open_list.add(m)
+
+            # remove n from the open_list, and add it to closed_list
+            # because all of his neighbors were inspected
+            open_list.remove(n)
+            closed_list.add(n)
+
+        print('Path does not exist!')
+        return None
+    
+*******************************************************************************************
+2) Aim:- Implement A star Algorithm for any game search problem. 
+
+def aStarAlgo(start_node, stop_node):
+         
+        open_set = set(start_node) 
+        closed_set = set()
+        g = {} #store distance from starting node
+        parents = {}# parents contains an adjacency map of all nodes
+ 
+        #ditance of starting node from itself is zero
+        g[start_node] = 0
+        #start_node is root node i.e it has no parent nodes
+        #so start_node is set to its own parent node
+        parents[start_node] = start_node
+         
+         
+        while len(open_set) > 0:
+            n = None
+ 
+            #node with lowest f() is found
+            for v in open_set:
+                if n == None or g[v] + heuristic(v) < g[n] + heuristic(n):
+                    n = v
+             
+                     
+            if n == stop_node or Graph_nodes[n] == None:
+                pass
+            else:
+                for (m, weight) in get_neighbors(n):
+                    #nodes 'm' not in first and last set are added to first
+                    #n is set its parent
+                    if m not in open_set and m not in closed_set:
+                        open_set.add(m)
+                        parents[m] = n
+                        g[m] = g[n] + weight
+                         
+     
+                    #for each node m,compare its distance from start i.e g(m) to the
+                    #from start through n node
+                    else:
+                        if g[m] > g[n] + weight:
+                            #update g(m)
+                            g[m] = g[n] + weight
+                            #change parent of m to n
+                            parents[m] = n
+                             
+                            #if m in closed set,remove and add to open
+                            if m in closed_set:
+                                closed_set.remove(m)
+                                open_set.add(m)
+ 
+            if n == None:
+                print('Path does not exist!')
+                return None
+ 
+            # if the current node is the stop_node
+            # then we begin reconstructin the path from it to the start_node
+            if n == stop_node:
+                path = []
+ 
+                while parents[n] != n:
+                    path.append(n)
+                    n = parents[n]
+ 
+                path.append(start_node)
+ 
+                path.reverse()
+ 
+                print('Path found: {}'.format(path))
+                return path
+ 
+ 
+            # remove n from the open_list, and add it to closed_list
+            # because all of his neighbors were inspected
+            open_set.remove(n)
+            closed_set.add(n)
+ 
+        print('Path does not exist!')
+        return None
+         
+#define fuction to return neighbor and its distance
+#from the passed node
+def get_neighbors(v):
+    if v in Graph_nodes:
+        return Graph_nodes[v]
+    else:
+        return None
+#for simplicity we ll consider heuristic distances given
+#and this function returns heuristic distance for all nodes
+def heuristic(n):
+        H_dist = {
+            'A': 11,
+            'B': 6,
+            'C': 99,
+            'D': 1,
+            'E': 7,
+            'G': 0,
+             
+        }
+ 
+        return H_dist[n]
+ 
+#Describe your graph here  
+Graph_nodes = {
+    'A': [('B', 2), ('E', 3)],
+    'B': [('C', 1),('G', 9)],
+    'C': None,
+    'E': [('D', 6)],
+    'D': [('G', 1)],
+     
+}
+aStarAlgo('A', 'G')
+
+******************************************************************************************
+3) Aim:- Implement Greedy search algorithm for any of the following application:
+I. Selection Sort
+II. Minimum Spanning Tree
+III. Single-Source Shortest Path Problem
+IV. Job Scheduling Problem
+V. Prim's Minimal Spanning Tree Algorithm
+VI. Kruskal's Minimal Spanning Tree Algorithm
+VII. Dijkstra's Minimal Spanning Tree Algorithm
+
+Program:-
+# Prim's Algorithm in Python
+
+INF = 9999999
+# number of vertices in graph
+N = 5
+#creating graph by adjacency matrix method
+G = [[0, 19, 5, 0, 0],
+     [19, 0, 5, 9, 2],
+     [5, 5, 0, 1, 6],
+     [0, 9, 1, 0, 1],
+     [0, 2, 6, 1, 0]]
+
+selected_node = [0, 0, 0, 0, 0]
+
+no_edge = 0
+
+selected_node[0] = True
+
+# printing for edge and weight
+print("Edge : Weight\n")
+while (no_edge < N - 1):
+    
+    minimum = INF
+    a = 0
+    b = 0
+    for m in range(N):
+        if selected_node[m]:
+            for n in range(N):
+                if ((not selected_node[n]) and G[m][n]):  
+                    # not in selected and there is an edge
+                    if minimum > G[m][n]:
+                        minimum = G[m][n]
+                        a = m
+                        b = n
+    print(str(a) + "-" + str(b) + ":" + str(G[a][b]))
+    selected_node[b] = True
+    no_edge += 1
+******************************************************************************
+# A Python3 program for
+# Prim's Minimum Spanning Tree (MST) algorithm.
+# The program is for adjacency matrix
+# representation of the graph
+ 
+# Library for INT_MAX
+import sys
+ 
+ 
+class Graph():
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = [[0 for column in range(vertices)]
+                      for row in range(vertices)]
+ 
+    # A utility function to print
+    # the constructed MST stored in parent[]
+    def printMST(self, parent):
+        print("Edge \tWeight")
+        for i in range(1, self.V):
+            print(parent[i], "-", i, "\t", self.graph[i][parent[i]])
+ 
+    # A utility function to find the vertex with
+    # minimum distance value, from the set of vertices
+    # not yet included in shortest path tree
+    def minKey(self, key, mstSet):
+ 
+        # Initialize min value
+        min = sys.maxsize
+ 
+        for v in range(self.V):
+            if key[v] < min and mstSet[v] == False:
+                min = key[v]
+                min_index = v
+ 
+        return min_index
+ 
+    # Function to construct and print MST for a graph
+    # represented using adjacency matrix representation
+    def primMST(self):
+ 
+        # Key values used to pick minimum weight edge in cut
+        key = [sys.maxsize] * self.V
+        parent = [None] * self.V  # Array to store constructed MST
+        # Make key 0 so that this vertex is picked as first vertex
+        key[0] = 0
+        mstSet = [False] * self.V
+ 
+        parent[0] = -1  # First node is always the root of
+ 
+        for cout in range(self.V):
+ 
+            # Pick the minimum distance vertex from
+            # the set of vertices not yet processed.
+            # u is always equal to src in first iteration
+            u = self.minKey(key, mstSet)
+ 
+            # Put the minimum distance vertex in
+            # the shortest path tree
+            mstSet[u] = True
+ 
+            # Update dist value of the adjacent vertices
+            # of the picked vertex only if the current
+            # distance is greater than new distance and
+            # the vertex in not in the shortest path tree
+            for v in range(self.V):
+ 
+                # graph[u][v] is non zero only for adjacent vertices of m
+                # mstSet[v] is false for vertices not yet included in MST
+                # Update the key only if graph[u][v] is smaller than key[v]
+                if self.graph[u][v] > 0 and mstSet[v] == False \
+                and key[v] > self.graph[u][v]:
+                    key[v] = self.graph[u][v]
+                    parent[v] = u
+ 
+        self.printMST(parent)
+ 
+ 
+# Driver's code
+if __name__ == '__main__':
+    g = Graph(5)
+    g.graph = [[0, 2, 0, 6, 0],
+               [2, 0, 3, 8, 5],
+               [0, 3, 0, 0, 7],
+               [6, 8, 0, 0, 9],
+               [0, 5, 7, 9, 0]]
+ 
+    g.primMST()
+ 
+**************************************************************************************
+# Selection sort in Python
+
+
+def selectionSort(array, size):
+   
+    for step in range(size):
+        min_idx = step
+
+        for i in range(step + 1, size):
+         
+            # to sort in descending order, change > to < in this line
+            # select the minimum element in each loop
+            if array[i] < array[min_idx]:
+                min_idx = i
+         
+        # put min at the correct position
+        (array[step], array[min_idx]) = (array[min_idx], array[step])
+
+
+data = [-2, 45, 0, 11, -9]
+size = len(data)
+selectionSort(data, size)
+print('Sorted Array in Ascending Order:')
+print(data)
+
+*******************************************************************************************
+4) Implement a solution for a Constraint Satisfaction Problem using Branch and Bound and 
+Backtracking for n-queens problem or a graph coloring problem.
+
+""" Python3 program to solve N Queen Problem
+using Branch or Bound """
+ 
+N = 8
+ 
+""" A utility function to print solution """
+def printSolution(board):
+    for i in range(N):
+        for j in range(N):
+            print(board[i][j], end = " ")
+        print()
+ 
+""" A Optimized function to check if
+a queen can be placed on board[row][col] """
+def isSafe(row, col, slashCode, backslashCode,
+           rowLookup, slashCodeLookup,
+                       backslashCodeLookup):
+    if (slashCodeLookup[slashCode[row][col]] or
+        backslashCodeLookup[backslashCode[row][col]] or
+        rowLookup[row]):
+        return False
+    return True
+ 
+""" A recursive utility function
+   to solve N Queen problem """
+def solveNQueensUtil(board, col, slashCode, backslashCode,
+                     rowLookup, slashCodeLookup,
+                     backslashCodeLookup):
+                         
+    """ base case: If all queens are
+       placed then return True """
+    if(col >= N):
+        return True
+    for i in range(N):
+        if(isSafe(i, col, slashCode, backslashCode,
+                  rowLookup, slashCodeLookup,
+                  backslashCodeLookup)):
+                     
+            """ Place this queen in board[i][col] """
+            board[i][col] = 1
+            rowLookup[i] = True
+            slashCodeLookup[slashCode[i][col]] = True
+            backslashCodeLookup[backslashCode[i][col]] = True
+             
+            """ recur to place rest of the queens """
+            if(solveNQueensUtil(board, col + 1,
+                                slashCode, backslashCode,
+                                rowLookup, slashCodeLookup,
+                                backslashCodeLookup)):
+                return True
+             
+            """ If placing queen in board[i][col]
+            doesn't lead to a solution,then backtrack """
+             
+            """ Remove queen from board[i][col] """
+            board[i][col] = 0
+            rowLookup[i] = False
+            slashCodeLookup[slashCode[i][col]] = False
+            backslashCodeLookup[backslashCode[i][col]] = False
+             
+    """ If queen can not be place in any row in
+    this column col then return False """
+    return False
+ 
+""" This function solves the N Queen problem using
+Branch or Bound. It mainly uses solveNQueensUtil()to
+solve the problem. It returns False if queens
+cannot be placed,otherwise return True or
+prints placement of queens in the form of 1s.
+Please note that there may be more than one
+solutions,this function prints one of the
+feasible solutions."""
+def solveNQueens():
+    board = [[0 for i in range(N)]
+                for j in range(N)]
+     
+    # helper matrices
+    slashCode = [[0 for i in range(N)]
+                    for j in range(N)]
+    backslashCode = [[0 for i in range(N)]
+                        for j in range(N)]
+     
+    # arrays to tell us which rows are occupied
+    rowLookup = [False] * N
+     
+    # keep two arrays to tell us
+    # which diagonals are occupied
+    x = 2 * N - 1
+    slashCodeLookup = [False] * x
+    backslashCodeLookup = [False] * x
+     
+    # initialize helper matrices
+    for rr in range(N):
+        for cc in range(N):
+            slashCode[rr][cc] = rr + cc
+            backslashCode[rr][cc] = rr - cc + 7
+     
+    if(solveNQueensUtil(board, 0, slashCode, backslashCode,
+                        rowLookup, slashCodeLookup,
+                        backslashCodeLookup) == False):
+        print("Solution does not exist")
+        return False
+         
+    # solution found
+    printSolution(board)
+    return True
+ 
+# Driver Code
+solveNQueens()
+ 
+*******************************************************************************************************
+5) Develop an elementary chatbot for any suitable customer interaction application.
+
+
+# importing the required modules  
+from chatterbot import ChatBot  
+from chatterbot.trainers import ListTrainer  
+from chatterbot.trainers import ChatterBotCorpusTrainer  
+  
+# creating a chatbot  
+myBot = ChatBot(  
+    name = 'Sakura',  
+    read_only = True,  
+    logic_adapters = [  
+        'chatterbot.logic.MathematicalEvaluation',  
+        'chatterbot.logic.BestMatch'  
+        ]  
+        )  
+  
+# training the chatbot  
+small_convo = [  
+    'Hi there!',  
+    'Hi',  
+    'How do you do?',  
+    'How are you?',  
+    'I\'m cool.',  
+    'Always cool.',  
+    'I\'m Okay',  
+    'Glad to hear that.',  
+    'I\'m fine',  
+    'I feel awesome',  
+    'Excellent, glad to hear that.',  
+    'Not so good',  
+    'Sorry to hear that.',  
+    'What\'s your name?',  
+    ' I\'m Sakura. Ask me a math question, please.'  
+    ]  
+  
+math_convo_1 = [  
+    'Pythagorean theorem',  
+    'a squared plus b squared equals c squared.'  
+    ]  
+  
+math_convo_2 = [  
+    'Law of Cosines',  
+    'c**2 = a**2 + b**2 - 2*a*b*cos(gamma)'  
+    ]  
+  
+# using the ListTrainer class  
+list_trainee = ListTrainer(myBot)  
+for i in (small_convo, math_convo_1, math_convo_2):  
+    list_trainee.train(i)  
+  
+# using the ChatterBotCorpusTrainer class  
+corpus_trainee = ChatterBotCorpusTrainer(myBot)  
+corpus_trainee.train('chatterbot.corpus.english')
+
+**********************************************************************************************
